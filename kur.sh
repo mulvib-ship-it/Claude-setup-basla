@@ -40,6 +40,17 @@ if [[ -d "$HEDEF/.git" ]]; then
 else
   mkdir -p "${HEDEF:h}" || dur "$HEDEF acilamadi."
   git clone "https://github.com/$KULLANICI/$DEPO.git" "$HEDEF" || dur "Depo alinamadi."
+  YENI_KLON=1
 fi
 
 python3 "$HEDEF/kurucu/kur.py" --uygula
+
+# Yeni ev bilgisayari: eski evin kendi degisikliklerini `ev` dalindan geri al.
+# kur.py'den sonra: git kimligi ancak o zaman ayarli. Gelenler icin kur.py bir daha.
+if [[ -n "$YENI_KLON" ]]; then
+  if python3 "$HEDEF/kurucu/esitle.py" ev-al; then
+    python3 "$HEDEF/kurucu/kur.py" --uygula
+  else
+    print -r -- "Uyari: ev dali alinamadi; yukaridaki sonuca bakin."
+  fi
+fi
